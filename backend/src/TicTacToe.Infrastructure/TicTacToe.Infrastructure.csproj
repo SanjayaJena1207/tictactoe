@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TicTacToe.Domain\TicTacToe.Domain.csproj" />
+    <ProjectReference Include="..\TicTacToe.Application\TicTacToe.Application.csproj" />
+  </ItemGroup>
+
 </Project>
