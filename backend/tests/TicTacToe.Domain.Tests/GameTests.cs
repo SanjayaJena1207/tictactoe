@@ -131,6 +131,113 @@ public class GameTests
     }
 
     [Fact]
+    public void TwoPlayerMode_Undo_RemovesOnlyMostRecentMove_TurnRevertsToThatPlayer()
+    {
+        var game = new Game(GameMode.TwoPlayer);
+        game.TryApplyMove(0, Player.X);
+        game.TryApplyMove(1, Player.O);
+
+        var result = game.UndoLastMove();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Single(game.MoveHistory);
+        Assert.Equal(Player.X, game.MoveHistory[0].Player);
+        Assert.Equal(Player.X, game.Board[0]);
+        Assert.Null(game.Board[1]);
+        Assert.Equal(Player.O, game.CurrentPlayer);
+        Assert.Equal(GameStatus.InProgress, game.Status);
+    }
+
+    [Fact]
+    public void VsComputerMode_Undo_RemovesLastTwoMoves_TurnRevertsToX()
+    {
+        var game = new Game(GameMode.VsComputer);
+        game.TryApplyMove(0, Player.X);
+        game.TryApplyMove(4, Player.O); // simulated computer move
+
+        var result = game.UndoLastMove();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Empty(game.MoveHistory);
+        Assert.Null(game.Board[0]);
+        Assert.Null(game.Board[4]);
+        Assert.Equal(Player.X, game.CurrentPlayer);
+        Assert.Equal(GameStatus.InProgress, game.Status);
+    }
+
+    [Fact]
+    public void VsComputerMode_Undo_WhenOnlyHumanHasMoved_RemovesJustThatOneMove()
+    {
+        var game = new Game(GameMode.VsComputer);
+        game.TryApplyMove(0, Player.X); // computer hasn't responded yet
+
+        var result = game.UndoLastMove();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Empty(game.MoveHistory);
+        Assert.Null(game.Board[0]);
+        Assert.Equal(Player.X, game.CurrentPlayer);
+        Assert.Equal(GameStatus.InProgress, game.Status);
+    }
+
+    [Fact]
+    public void Undo_IsRejected_WhenGameIsWon()
+    {
+        var game = new Game(GameMode.TwoPlayer);
+        game.TryApplyMove(0, Player.X);
+        game.TryApplyMove(3, Player.O);
+        game.TryApplyMove(1, Player.X);
+        game.TryApplyMove(4, Player.O);
+        game.TryApplyMove(2, Player.X); // X completes the top row
+
+        Assert.Equal(GameStatus.Won, game.Status);
+
+        var result = game.UndoLastMove();
+
+        Assert.False(result.IsSuccess);
+        Assert.NotNull(result.ErrorMessage);
+        Assert.Equal(GameStatus.Won, game.Status);
+        Assert.Equal(5, game.MoveHistory.Count);
+    }
+
+    [Fact]
+    public void Undo_IsRejected_WhenGameIsDraw()
+    {
+        var game = new Game(GameMode.TwoPlayer);
+        var moves = new[]
+        {
+            (0, Player.X), (1, Player.O), (2, Player.X),
+            (4, Player.O), (3, Player.X), (5, Player.O),
+            (7, Player.X), (6, Player.O), (8, Player.X),
+        };
+        foreach (var (cell, player) in moves)
+        {
+            game.TryApplyMove(cell, player);
+        }
+
+        Assert.Equal(GameStatus.Draw, game.Status);
+
+        var result = game.UndoLastMove();
+
+        Assert.False(result.IsSuccess);
+        Assert.NotNull(result.ErrorMessage);
+        Assert.Equal(GameStatus.Draw, game.Status);
+        Assert.Equal(9, game.MoveHistory.Count);
+    }
+
+    [Fact]
+    public void Undo_IsRejected_WhenNoMovesHaveBeenMade()
+    {
+        var game = new Game(GameMode.TwoPlayer);
+
+        var result = game.UndoLastMove();
+
+        Assert.False(result.IsSuccess);
+        Assert.NotNull(result.ErrorMessage);
+        Assert.Equal(GameStatus.InProgress, game.Status);
+    }
+
+    [Fact]
     public void Reset_ClearsBoardHistoryAndStatus()
     {
         var game = new Game(GameMode.TwoPlayer);

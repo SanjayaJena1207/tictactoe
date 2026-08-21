@@ -44,6 +44,24 @@ public sealed class GameService
         return ServiceResult<GameStateDto>.Success(game.ToDto());
     }
 
+    public ServiceResult<GameStateDto> Undo(Guid gameId)
+    {
+        var game = _repository.GetById(gameId);
+        if (game is null)
+        {
+            return NotFound(gameId);
+        }
+
+        var result = game.UndoLastMove();
+        if (!result.IsSuccess)
+        {
+            return ServiceResult<GameStateDto>.Failure(result.ErrorMessage!, ServiceErrorReason.ValidationFailed);
+        }
+
+        _repository.Save(game);
+        return ServiceResult<GameStateDto>.Success(game.ToDto());
+    }
+
     public ServiceResult<GameStateDto> ResetGame(Guid gameId)
     {
         var game = _repository.GetById(gameId);
