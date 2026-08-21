@@ -5,10 +5,12 @@ namespace TicTacToe.Application;
 public sealed class GameService
 {
     private readonly IGameRepository _repository;
+    private readonly ComputerPlayerService _computerPlayer;
 
-    public GameService(IGameRepository repository)
+    public GameService(IGameRepository repository, ComputerPlayerService computerPlayer)
     {
         _repository = repository;
+        _computerPlayer = computerPlayer;
     }
 
     public GameStateDto CreateGame(GameMode mode)
@@ -38,6 +40,15 @@ public sealed class GameService
         if (!result.IsSuccess)
         {
             return ServiceResult<GameStateDto>.Failure(result.ErrorMessage!, ServiceErrorReason.ValidationFailed);
+        }
+
+        // Only the human's move ever leaves the computer (O) on the clock; if the human's
+        // move already ended the game, CurrentPlayer no longer advances and this is skipped.
+        if (game.GameMode == GameMode.VsComputer
+            && game.Status == GameStatus.InProgress
+            && game.CurrentPlayer == Player.O)
+        {
+            game.TryApplyMove(_computerPlayer.SelectMove(game.Board), Player.O);
         }
 
         _repository.Save(game);

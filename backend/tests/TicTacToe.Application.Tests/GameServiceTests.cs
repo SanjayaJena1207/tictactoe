@@ -9,7 +9,7 @@ public class GameServiceTests
 
     public GameServiceTests()
     {
-        _sut = new GameService(_repository);
+        _sut = new GameService(_repository, new ComputerPlayerService());
     }
 
     [Fact]
@@ -66,6 +66,63 @@ public class GameServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(ServiceErrorReason.ValidationFailed, result.ErrorReason);
         Assert.False(string.IsNullOrWhiteSpace(result.ErrorMessage));
+    }
+
+    [Fact]
+    public void ApplyMove_VsComputerMode_AutomaticallyAppliesExactlyOneComputerResponse()
+    {
+        var created = _sut.CreateGame(GameMode.VsComputer);
+
+        var result = _sut.ApplyMove(created.GameId, Player.X, 0);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Equal(2, dto.MoveHistory.Count);
+        Assert.Equal(nameof(Player.X), dto.MoveHistory[0].Player);
+        Assert.Equal(nameof(Player.O), dto.MoveHistory[1].Player);
+        Assert.Equal(nameof(Player.X), dto.CurrentPlayer);
+        Assert.Equal(nameof(GameStatus.InProgress), dto.Status);
+    }
+
+    [Fact]
+    public void ApplyMove_VsComputerMode_DoesNotTriggerComputerMove_WhenHumanMoveWinsTheGame()
+    {
+        var created = _sut.CreateGame(GameMode.VsComputer);
+        var game = _repository.GetById(created.GameId)!;
+        game.TryApplyMove(0, Player.X);
+        game.TryApplyMove(3, Player.O);
+        game.TryApplyMove(1, Player.X);
+        game.TryApplyMove(4, Player.O);
+
+        var result = _sut.ApplyMove(created.GameId, Player.X, 2); // completes the top row
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Equal(nameof(GameStatus.Won), dto.Status);
+        Assert.Equal(nameof(Player.X), dto.Winner);
+        Assert.Equal(5, dto.MoveHistory.Count);
+    }
+
+    [Fact]
+    public void ApplyMove_VsComputerMode_DoesNotTriggerComputerMove_WhenHumanMoveEndsInDraw()
+    {
+        var created = _sut.CreateGame(GameMode.VsComputer);
+        var game = _repository.GetById(created.GameId)!;
+        game.TryApplyMove(0, Player.X);
+        game.TryApplyMove(1, Player.O);
+        game.TryApplyMove(2, Player.X);
+        game.TryApplyMove(4, Player.O);
+        game.TryApplyMove(3, Player.X);
+        game.TryApplyMove(5, Player.O);
+        game.TryApplyMove(7, Player.X);
+        game.TryApplyMove(6, Player.O);
+
+        var result = _sut.ApplyMove(created.GameId, Player.X, 8);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Equal(nameof(GameStatus.Draw), dto.Status);
+        Assert.Equal(9, dto.MoveHistory.Count);
     }
 
     [Fact]
