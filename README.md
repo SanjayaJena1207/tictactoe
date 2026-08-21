@@ -1,2 +1,2 @@
 # tictactoe
-This is a browser based Toc Tac Toe Application using Angular and .Net
+This is a browser based Tic Tac Toe Application using Angular and .Net
