@@ -1,0 +1,35 @@
+# ---------------------------------------------
+# .NET / Visual Studio
+# ---------------------------------------------
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userprefs
+appsettings.*.local.json
+
+# Build / publish output
+[Dd]ebug/
+[Rr]elease/
+publish/
+*.nupkg
+TestResults/
+
+# ---------------------------------------------
+# Angular / Node
+# ---------------------------------------------
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log*
+coverage/
+
+# ---------------------------------------------
+# Editors / OS
+# ---------------------------------------------
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
