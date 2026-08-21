@@ -5,11 +5,14 @@ namespace TicTacToe.Application.Tests;
 public class GameServiceTests
 {
     private readonly FakeGameRepository _repository = new();
+    private readonly FakeScoreboardRepository _scoreboardRepository = new();
+    private readonly ScoreboardService _scoreboardService;
     private readonly GameService _sut;
 
     public GameServiceTests()
     {
-        _sut = new GameService(_repository, new ComputerPlayerService());
+        _scoreboardService = new ScoreboardService(_scoreboardRepository);
+        _sut = new GameService(_repository, new ComputerPlayerService(), _scoreboardService);
     }
 
     [Fact]
@@ -123,6 +126,113 @@ public class GameServiceTests
         var dto = result.Value!;
         Assert.Equal(nameof(GameStatus.Draw), dto.Status);
         Assert.Equal(9, dto.MoveHistory.Count);
+    }
+
+    [Fact]
+    public void ApplyMove_WhenXWinsTwoPlayerMode_IncrementsXWinsExactlyOnce()
+    {
+        var created = _sut.CreateGame(GameMode.TwoPlayer);
+        _sut.ApplyMove(created.GameId, Player.X, 0);
+        _sut.ApplyMove(created.GameId, Player.O, 3);
+        _sut.ApplyMove(created.GameId, Player.X, 1);
+        _sut.ApplyMove(created.GameId, Player.O, 4);
+
+        var result = _sut.ApplyMove(created.GameId, Player.X, 2); // X completes the top row
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(new ScoreboardDto(1, 0, 0), _scoreboardService.GetScoreboard());
+
+        // Defensive: a further move on the now-completed game must be rejected and must
+        // not double-count the win.
+        var repeated = _sut.ApplyMove(created.GameId, Player.O, 5);
+        Assert.False(repeated.IsSuccess);
+        Assert.Equal(new ScoreboardDto(1, 0, 0), _scoreboardService.GetScoreboard());
+    }
+
+    [Fact]
+    public void ApplyMove_VsComputerMode_WhenComputersAutoMoveWins_IncrementsOWinsExactlyOnce()
+    {
+        var created = _sut.CreateGame(GameMode.VsComputer);
+        var game = _repository.GetById(created.GameId)!;
+        game.TryApplyMove(0, Player.X);
+        game.TryApplyMove(3, Player.O);
+        game.TryApplyMove(1, Player.X);
+        game.TryApplyMove(4, Player.O); // O now threatens to complete 3,4,5
+
+        var result = _sut.ApplyMove(created.GameId, Player.X, 6); // harmless human move
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Equal(nameof(GameStatus.Won), dto.Status);
+        Assert.Equal(nameof(Player.O), dto.Winner);
+        Assert.Equal(new ScoreboardDto(0, 1, 0), _scoreboardService.GetScoreboard());
+    }
+
+    [Fact]
+    public void ApplyMove_WhenGameEndsInDraw_IncrementsDrawsExactlyOnce()
+    {
+        var created = _sut.CreateGame(GameMode.TwoPlayer);
+        _sut.ApplyMove(created.GameId, Player.X, 0);
+        _sut.ApplyMove(created.GameId, Player.O, 1);
+        _sut.ApplyMove(created.GameId, Player.X, 2);
+        _sut.ApplyMove(created.GameId, Player.O, 4);
+        _sut.ApplyMove(created.GameId, Player.X, 3);
+        _sut.ApplyMove(created.GameId, Player.O, 5);
+        _sut.ApplyMove(created.GameId, Player.X, 7);
+        _sut.ApplyMove(created.GameId, Player.O, 6);
+
+        var result = _sut.ApplyMove(created.GameId, Player.X, 8);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(new ScoreboardDto(0, 0, 1), _scoreboardService.GetScoreboard());
+    }
+
+    [Fact]
+    public void ResetGame_DoesNotAffectScoreboard()
+    {
+        var created = _sut.CreateGame(GameMode.TwoPlayer);
+        _sut.ApplyMove(created.GameId, Player.X, 0);
+        _sut.ApplyMove(created.GameId, Player.O, 3);
+        _sut.ApplyMove(created.GameId, Player.X, 1);
+        _sut.ApplyMove(created.GameId, Player.O, 4);
+        _sut.ApplyMove(created.GameId, Player.X, 2); // X wins
+        var scoreboardBefore = _scoreboardService.GetScoreboard();
+
+        _sut.ResetGame(created.GameId);
+
+        Assert.Equal(scoreboardBefore, _scoreboardService.GetScoreboard());
+    }
+
+    [Fact]
+    public void MultipleGamesInSequence_AccumulateScoreboardCorrectly()
+    {
+        var game1 = _sut.CreateGame(GameMode.TwoPlayer); // X wins
+        _sut.ApplyMove(game1.GameId, Player.X, 0);
+        _sut.ApplyMove(game1.GameId, Player.O, 3);
+        _sut.ApplyMove(game1.GameId, Player.X, 1);
+        _sut.ApplyMove(game1.GameId, Player.O, 4);
+        _sut.ApplyMove(game1.GameId, Player.X, 2);
+
+        var game2 = _sut.CreateGame(GameMode.TwoPlayer); // O wins
+        _sut.ApplyMove(game2.GameId, Player.X, 0);
+        _sut.ApplyMove(game2.GameId, Player.O, 3);
+        _sut.ApplyMove(game2.GameId, Player.X, 1);
+        _sut.ApplyMove(game2.GameId, Player.O, 4);
+        _sut.ApplyMove(game2.GameId, Player.X, 8);
+        _sut.ApplyMove(game2.GameId, Player.O, 5);
+
+        var game3 = _sut.CreateGame(GameMode.TwoPlayer); // draw
+        _sut.ApplyMove(game3.GameId, Player.X, 0);
+        _sut.ApplyMove(game3.GameId, Player.O, 1);
+        _sut.ApplyMove(game3.GameId, Player.X, 2);
+        _sut.ApplyMove(game3.GameId, Player.O, 4);
+        _sut.ApplyMove(game3.GameId, Player.X, 3);
+        _sut.ApplyMove(game3.GameId, Player.O, 5);
+        _sut.ApplyMove(game3.GameId, Player.X, 7);
+        _sut.ApplyMove(game3.GameId, Player.O, 6);
+        _sut.ApplyMove(game3.GameId, Player.X, 8);
+
+        Assert.Equal(new ScoreboardDto(1, 1, 1), _scoreboardService.GetScoreboard());
     }
 
     [Fact]
