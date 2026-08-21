@@ -69,6 +69,92 @@ public class GameServiceTests
     }
 
     [Fact]
+    public void Undo_TwoPlayerMode_RemovesOnlyLastMove()
+    {
+        var created = _sut.CreateGame(GameMode.TwoPlayer);
+        _sut.ApplyMove(created.GameId, Player.X, 0);
+        _sut.ApplyMove(created.GameId, Player.O, 1);
+
+        var result = _sut.Undo(created.GameId);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Single(dto.MoveHistory);
+        Assert.Equal("X", dto.Board[0]);
+        Assert.Null(dto.Board[1]);
+        Assert.Equal(nameof(Player.O), dto.CurrentPlayer);
+    }
+
+    [Fact]
+    public void Undo_VsComputerMode_RemovesLastTwoMoves()
+    {
+        var created = _sut.CreateGame(GameMode.VsComputer);
+        _sut.ApplyMove(created.GameId, Player.X, 0);
+        _sut.ApplyMove(created.GameId, Player.O, 4); // simulated computer move
+
+        var result = _sut.Undo(created.GameId);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Empty(dto.MoveHistory);
+        Assert.All(dto.Board, cell => Assert.Null(cell));
+        Assert.Equal(nameof(Player.X), dto.CurrentPlayer);
+    }
+
+    [Fact]
+    public void Undo_VsComputerMode_WhenOnlyHumanHasMoved_RemovesJustThatOneMove()
+    {
+        var created = _sut.CreateGame(GameMode.VsComputer);
+        _sut.ApplyMove(created.GameId, Player.X, 0); // computer hasn't responded yet
+
+        var result = _sut.Undo(created.GameId);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        var dto = result.Value!;
+        Assert.Empty(dto.MoveHistory);
+        Assert.All(dto.Board, cell => Assert.Null(cell));
+        Assert.Equal(nameof(Player.X), dto.CurrentPlayer);
+    }
+
+    [Fact]
+    public void Undo_RejectedWithClearError_WhenGameStatusIsWon()
+    {
+        var created = _sut.CreateGame(GameMode.TwoPlayer);
+        _sut.ApplyMove(created.GameId, Player.X, 0);
+        _sut.ApplyMove(created.GameId, Player.O, 3);
+        _sut.ApplyMove(created.GameId, Player.X, 1);
+        _sut.ApplyMove(created.GameId, Player.O, 4);
+        _sut.ApplyMove(created.GameId, Player.X, 2); // X completes the top row
+
+        var result = _sut.Undo(created.GameId);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ServiceErrorReason.ValidationFailed, result.ErrorReason);
+        Assert.False(string.IsNullOrWhiteSpace(result.ErrorMessage));
+    }
+
+    [Fact]
+    public void Undo_RejectedWithClearError_WhenMoveHistoryIsEmpty()
+    {
+        var created = _sut.CreateGame(GameMode.TwoPlayer);
+
+        var result = _sut.Undo(created.GameId);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ServiceErrorReason.ValidationFailed, result.ErrorReason);
+        Assert.False(string.IsNullOrWhiteSpace(result.ErrorMessage));
+    }
+
+    [Fact]
+    public void Undo_UnknownGameId_ReturnsNotFoundError()
+    {
+        var result = _sut.Undo(Guid.NewGuid());
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ServiceErrorReason.NotFound, result.ErrorReason);
+    }
+
+    [Fact]
     public void ResetGame_ClearsBoardHistoryAndStatus_ButKeepsSameGameId()
     {
         var created = _sut.CreateGame(GameMode.TwoPlayer);
