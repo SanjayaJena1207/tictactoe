@@ -1,0 +1,31 @@
+.cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1;
+  background: #fff;
+  color: #222;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  padding: 0;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:not(:disabled):hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &.winning {
+    background: #2e7d32;
+    color: #fff;
+    border-color: transparent;
+  }
+}

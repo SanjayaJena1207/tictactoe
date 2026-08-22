@@ -1,0 +1,22 @@
+<div class="mode-selector" role="group" aria-label="Game mode">
+  <button
+    type="button"
+    class="mode-button"
+    [class.selected]="selectedMode() === 'TwoPlayer'"
+    [attr.aria-pressed]="selectedMode() === 'TwoPlayer'"
+    [disabled]="isMidGame()"
+    (click)="selectMode('TwoPlayer')"
+  >
+    Two Player
+  </button>
+  <button
+    type="button"
+    class="mode-button"
+    [class.selected]="selectedMode() === 'VsComputer'"
+    [attr.aria-pressed]="selectedMode() === 'VsComputer'"
+    [disabled]="isMidGame()"
+    (click)="selectMode('VsComputer')"
+  >
+    Play Against Computer
+  </button>
+</div>

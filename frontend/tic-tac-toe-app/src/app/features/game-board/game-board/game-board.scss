@@ -1,0 +1,20 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.5rem;
+  width: min(360px, 90vw);
+  margin: 0 auto;
+}
+
+.move-error {
+  margin-top: 0.75rem;
+  text-align: center;
+  color: #c62828;
+  font-size: 0.9rem;
+}
+
+.no-game {
+  text-align: center;
+  color: #555;
+}
