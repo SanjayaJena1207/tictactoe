@@ -1,0 +1,19 @@
+@if (gameState(); as game) {
+  <div class="board" role="grid" aria-label="Tic tac toe board">
+    @for (cell of game.board; track $index) {
+      <app-game-cell
+        [value]="cell"
+        [status]="game.status"
+        [index]="$index"
+        [highlighted]="winningCells().has($index)"
+        (cellClick)="onCellClick($event)"
+      />
+    }
+  </div>
+
+  @if (errorMessage()) {
+    <p class="move-error" role="alert">{{ errorMessage() }}</p>
+  }
+} @else {
+  <p class="no-game">Select a mode to start a game.</p>
+}
