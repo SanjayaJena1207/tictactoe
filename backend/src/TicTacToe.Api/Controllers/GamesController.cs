@@ -8,6 +8,7 @@ namespace TicTacToe.Api.Controllers;
 
 /// <summary>
 /// Create, play, undo, and reset Tic-Tac-Toe games.
+/// Swagger UI is available at <c>/swagger</c> and OpenAPI JSON at <c>/swagger/v1/swagger.json</c>.
 /// </summary>
 [ApiController]
 [Route("api/games")]
