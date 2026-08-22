@@ -53,4 +53,29 @@ describe('StatusBanner', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance.message()).toBe("It's a draw!");
   });
+
+  it('is styled neutrally while in progress', () => {
+    store.setGameState(makeGame({}));
+    const fixture = TestBed.createComponent(StatusBanner);
+    fixture.detectChanges();
+    const banner = fixture.nativeElement.querySelector('.status-banner');
+    expect(banner.classList.contains('status-banner--win')).toBe(false);
+    expect(banner.classList.contains('status-banner--draw')).toBe(false);
+  });
+
+  it('is styled as a win once the game is won', () => {
+    store.setGameState(makeGame({ status: 'Won', winner: 'X', winningCells: [0, 1, 2] }));
+    const fixture = TestBed.createComponent(StatusBanner);
+    fixture.detectChanges();
+    const banner = fixture.nativeElement.querySelector('.status-banner');
+    expect(banner.classList.contains('status-banner--win')).toBe(true);
+  });
+
+  it('is styled as a draw once the game is a draw', () => {
+    store.setGameState(makeGame({ status: 'Draw' }));
+    const fixture = TestBed.createComponent(StatusBanner);
+    fixture.detectChanges();
+    const banner = fixture.nativeElement.querySelector('.status-banner');
+    expect(banner.classList.contains('status-banner--draw')).toBe(true);
+  });
 });

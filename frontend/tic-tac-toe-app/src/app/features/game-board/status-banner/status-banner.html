@@ -1,3 +1,7 @@
-@if (message()) {
-  <p class="status-banner">{{ message() }}</p>
+@if (message(); as text) {
+  <p
+    class="status-banner"
+    [class.status-banner--win]="statusVariant() === 'win'"
+    [class.status-banner--draw]="statusVariant() === 'draw'"
+  >{{ text }}</p>
 }

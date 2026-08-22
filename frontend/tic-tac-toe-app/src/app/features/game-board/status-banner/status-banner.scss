@@ -1,6 +1,22 @@
 .status-banner {
+  display: inline-block;
   text-align: center;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+
+  &--win {
+    color: #fff;
+    background: var(--color-success);
+  }
+
+  &--draw {
+    color: var(--color-draw-text);
+    background: var(--color-draw-bg);
+    border: 1px solid var(--color-draw-border);
+  }
 }

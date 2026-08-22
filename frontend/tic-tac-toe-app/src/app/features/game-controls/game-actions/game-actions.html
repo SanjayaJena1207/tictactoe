@@ -1,5 +1,5 @@
 <div class="game-actions">
-  <button type="button" [disabled]="!canUndo()" (click)="undo()">Undo Last Move</button>
-  <button type="button" [disabled]="!canResetGame()" (click)="resetGame()">Reset Game</button>
-  <button type="button" (click)="resetScoreboard()">Reset Scoreboard</button>
+  <button type="button" class="btn" [disabled]="!canUndo()" (click)="undo()">Undo Last Move</button>
+  <button type="button" class="btn" [disabled]="!canResetGame()" (click)="resetGame()">Reset Game</button>
+  <button type="button" class="btn" (click)="resetScoreboard()">Reset Scoreboard</button>
 </div>
