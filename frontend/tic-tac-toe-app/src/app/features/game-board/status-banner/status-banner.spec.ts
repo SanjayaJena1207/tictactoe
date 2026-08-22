@@ -59,16 +59,27 @@ describe('StatusBanner', () => {
     const fixture = TestBed.createComponent(StatusBanner);
     fixture.detectChanges();
     const banner = fixture.nativeElement.querySelector('.status-banner');
-    expect(banner.classList.contains('status-banner--win')).toBe(false);
+    expect(banner.classList.contains('status-banner--win-x')).toBe(false);
+    expect(banner.classList.contains('status-banner--win-o')).toBe(false);
     expect(banner.classList.contains('status-banner--draw')).toBe(false);
   });
 
-  it('is styled as a win once the game is won', () => {
+  it('is styled as an X win once X wins', () => {
     store.setGameState(makeGame({ status: 'Won', winner: 'X', winningCells: [0, 1, 2] }));
     const fixture = TestBed.createComponent(StatusBanner);
     fixture.detectChanges();
     const banner = fixture.nativeElement.querySelector('.status-banner');
-    expect(banner.classList.contains('status-banner--win')).toBe(true);
+    expect(banner.classList.contains('status-banner--win-x')).toBe(true);
+    expect(banner.classList.contains('status-banner--win-o')).toBe(false);
+  });
+
+  it('is styled as an O win once O wins', () => {
+    store.setGameState(makeGame({ status: 'Won', winner: 'O', winningCells: [0, 1, 2] }));
+    const fixture = TestBed.createComponent(StatusBanner);
+    fixture.detectChanges();
+    const banner = fixture.nativeElement.querySelector('.status-banner');
+    expect(banner.classList.contains('status-banner--win-o')).toBe(true);
+    expect(banner.classList.contains('status-banner--win-x')).toBe(false);
   });
 
   it('is styled as a draw once the game is a draw', () => {

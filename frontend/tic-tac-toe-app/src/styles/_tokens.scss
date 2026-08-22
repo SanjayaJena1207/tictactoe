@@ -1,0 +1,54 @@
+/* Design tokens — "Industrial Control Panel" theme.
+   Central source of truth for every color, font, spacing and radius value
+   used across the app. Components consume these via var(--token-name). */
+:root {
+  /* Fonts: geometric sans for UI chrome, monospace for data-like content. */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-family: var(--font-sans);
+
+  /* Type scale: 3 sizes only. */
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.5rem;
+
+  /* Spacing scale (4/8/12/16/24/32px). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border radius: sharp, panel-like — not soft consumer-app corners. */
+  --radius-sm: 4px;
+  --radius: 6px;
+
+  /* Surfaces. */
+  --color-bg: #16191d;
+  --color-surface: #1f242b;
+  --color-surface-muted: #262c34;
+  --color-border: #2c333c;
+  --color-text: #e8eaed;
+  --color-text-muted: #8b93a1;
+
+  /* Player accents — used consistently for board, status banner, move
+     history and scoreboard. */
+  --color-x: #f2a007;
+  --color-x-subtle: rgb(242 160 7 / 12%);
+  --color-o: #2dd4c8;
+  --color-o-subtle: rgb(45 212 200 / 12%);
+  --color-neutral: #8b93a1;
+
+  /* Generic UI accent (focus rings, hover, selected controls) reuses the
+     amber player color to keep the palette restrained rather than
+     introducing a ninth color. */
+  --color-accent: var(--color-x);
+  --color-accent-subtle: var(--color-x-subtle);
+
+  --color-draw-bg: rgb(139 147 161 / 12%);
+  --color-draw-text: #c7ccd4;
+  --color-draw-border: rgb(139 147 161 / 40%);
+
+  --color-danger: #ff6b6b;
+}

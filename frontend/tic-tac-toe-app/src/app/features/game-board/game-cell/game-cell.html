@@ -3,7 +3,11 @@
   class="cell"
   [class.winning]="highlighted()"
   [class.game-over]="isGameOver() && !highlighted()"
+  [class.cell--x]="value() === 'X'"
+  [class.cell--o]="value() === 'O'"
   [disabled]="!isClickable()"
   [attr.aria-label]="'Cell ' + (index() + 1) + (value() ? ', ' + value() : ', empty')"
   (click)="onClick()"
->{{ display() }}</button>
+>@if (display(); as mark) {
+  <span class="mark">{{ mark }}</span>
+}</button>

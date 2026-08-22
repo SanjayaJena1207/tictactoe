@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { GameService } from '../../../core/services/game.service';
 import { GameStateStore } from '../../../core/state/game-state.store';
+import { cellCenter, lineEndpoints } from './cell-geometry';
 import { GameCell } from '../game-cell/game-cell';
 
 @Component({
@@ -16,6 +17,11 @@ export class GameBoard {
   readonly gameState = this.store.gameState;
   readonly errorMessage = computed(() => this.store.error()?.detail ?? null);
   readonly winningCells = computed(() => new Set(this.gameState()?.winningCells ?? []));
+
+  /* Presentation-only: derives the winning-line SVG endpoints from the
+     existing winningCells state. Does not affect game logic. */
+  readonly winLine = computed(() => lineEndpoints(this.gameState()?.winningCells));
+  readonly cellCenter = cellCenter;
 
   onCellClick(index: number): void {
     const game = this.gameState();

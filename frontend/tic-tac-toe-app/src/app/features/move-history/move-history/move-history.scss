@@ -2,12 +2,84 @@
   display: block;
 }
 
+/* Row/header heights below are measured from the actual rendered DOM
+   after the block-layout switch below (not guessed, and re-measured
+   after that switch since it changes the mono font's line-height
+   metrics): caption block 17px + 12px margin, header row 39px, each
+   body row 27px. max-height is sized so exactly 10 body rows are
+   visible below the pinned caption + header before scrolling kicks in.
+
+   A plain <table> doesn't respect max-height/overflow directly in the
+   engines tested, so thead/tbody switch to display:block and each <tr>
+   becomes its own display:table row so columns still line up — the
+   standard scrollable-table-with-fixed-header technique. Verified this
+   doesn't change the accessibility tree (table/rowgroup/row/cell roles
+   are identical before and after). */
 .move-history {
+  display: block;
+  position: relative;
   width: 100%;
   font-size: var(--font-size-sm);
+  max-height: calc(17px + var(--space-3) + 39px + (27px * 10));
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+
+  /* Themed scrollbar instead of the browser default. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-surface-muted);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-surface-muted);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+  }
+
+  /* position:sticky on the <th> (a table-cell nested inside the
+     synthetic display:table <tr>) doesn't reliably engage in the
+     engines tested — it just scrolls away. Sticking the block-level
+     <thead> itself works (same as caption below) and pins the whole
+     header row as one unit. */
+  thead {
+    display: block;
+    width: 100%;
+    position: sticky;
+    top: calc(17px + var(--space-3));
+    z-index: 1;
+    background: var(--color-surface);
+  }
+
+  tbody {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-spacing: 0;
+  }
 
   caption {
+    display: block;
+    width: 100%;
     text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--color-surface);
   }
 
   th,
@@ -18,11 +90,59 @@
   }
 
   th {
-    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+
+  /* Move # / Player stay compact; Position (fixed-length "Row N, Column
+     N" strings, always 15 chars) gets the remaining column width, with a
+     min-width floor so it never wraps even if the panel gets squeezed
+     narrower than usual. Each <tr> lays out as its own mini fixed-layout
+     table, so the same widths are set on both th and td to keep header
+     and body columns aligned. */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 25%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 27%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    min-width: 120px;
+  }
+
+  .cell-num,
+  .cell-player,
+  .cell-pos {
+    font-family: var(--font-mono);
+  }
+
+  .cell-player {
+    font-weight: 700;
+  }
+
+  .cell-player--x {
+    color: var(--color-x);
+  }
+
+  .cell-player--o {
+    color: var(--color-o);
+  }
+
+  .cell-pos {
+    white-space: nowrap;
   }
 
   .empty {
+    font-family: var(--font-sans);
     color: var(--color-text-muted);
     text-align: center;
   }

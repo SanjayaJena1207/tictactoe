@@ -1,42 +1,5 @@
 /* Design tokens shared by every component. Hand-rolled, no UI library. */
-:root {
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
-  /* Type scale: 3 sizes only. */
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.5rem;
-
-  /* Spacing scale. */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-
-  --radius: 0.5rem;
-
-  --color-bg: #f5f6f8;
-  --color-surface: #ffffff;
-  --color-surface-muted: #eef0f3;
-  --color-border: #d7dbe0;
-  --color-text: #1f2430;
-  --color-text-muted: #5b6472;
-
-  /* The one accent color. */
-  --color-accent: #1565c0;
-  --color-accent-subtle: #e3f0fd;
-
-  --color-success: #1b8a3d;
-  --color-success-subtle: #e5f6ea;
-
-  --color-draw-bg: #fff3cd;
-  --color-draw-text: #7a5b00;
-  --color-draw-border: #f0d98a;
-
-  --color-danger: #b3261e;
-}
+@use './styles/tokens';
 
 * {
   box-sizing: border-box;
@@ -49,7 +12,7 @@ body {
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: var(--font-sans);
   font-size: var(--font-size-base);
   color: var(--color-text);
   background: var(--color-bg);
@@ -60,18 +23,26 @@ table {
 }
 
 .panel-title {
-  font-size: var(--font-size-base);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
   font-weight: 700;
-  margin: 0 0 var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-3);
 }
 
 /* Shared button look, reused by every control across the app instead of
-   redefining borders/padding/disabled-state per component. */
+   redefining borders/padding/disabled-state per component. Flat, sharp
+   corners — equipment-panel controls, not soft consumer buttons. */
 .btn {
-  font: inherit;
-  font-size: var(--font-size-base);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
@@ -85,6 +56,7 @@ table {
 
 .btn:hover:not(:disabled) {
   border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .btn:focus-visible {
@@ -93,12 +65,27 @@ table {
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .btn.is-selected {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #fff;
+  color: var(--color-bg);
+}
+
+.btn.is-selected:hover:not(:disabled) {
+  color: var(--color-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
