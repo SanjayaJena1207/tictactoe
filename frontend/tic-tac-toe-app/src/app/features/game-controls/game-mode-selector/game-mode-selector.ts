@@ -14,11 +14,7 @@ export class GameModeSelector {
   private readonly store = inject(GameStateStore);
 
   readonly selectedMode = computed(() => this.store.gameState()?.gameMode ?? null);
-
-  readonly isMidGame = computed(() => {
-    const game = this.store.gameState();
-    return !!game && game.status === 'InProgress' && game.moveHistory.length > 0;
-  });
+  readonly isMidGame = this.store.isMidGame;
 
   selectMode(mode: GameMode): void {
     if (this.isMidGame()) {

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { ApiError } from '../models/api-error.model';
 import { GameState } from '../models/game-state.model';
 
@@ -9,6 +9,12 @@ export class GameStateStore {
 
   readonly gameState = this.stateSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
+
+  /** True once at least one move has been made in a game that hasn't finished yet. */
+  readonly isMidGame = computed(() => {
+    const state = this.stateSignal();
+    return !!state && state.status === 'InProgress' && state.moveHistory.length > 0;
+  });
 
   setGameState(state: GameState): void {
     this.stateSignal.set(state);
