@@ -27,6 +27,10 @@ export class StatusBanner {
     }
   });
 
+  /* Presentation-only: exposes the winner so the template can color the
+     strip amber (X) vs cyan (O). Does not affect game logic. */
+  readonly winner = computed(() => this.store.gameState()?.winner ?? null);
+
   readonly message = computed(() => {
     const game = this.store.gameState();
     if (!game) {

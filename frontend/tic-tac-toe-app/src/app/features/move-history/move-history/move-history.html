@@ -10,9 +10,9 @@
   <tbody>
     @for (move of moves(); track move.moveNumber) {
       <tr>
-        <td>{{ move.moveNumber }}</td>
-        <td>{{ move.player }}</td>
-        <td>{{ formatPosition(move.cellIndex) }}</td>
+        <td class="cell-num">{{ move.moveNumber }}</td>
+        <td class="cell-player" [class.cell-player--x]="move.player === 'X'" [class.cell-player--o]="move.player === 'O'">{{ move.player }}</td>
+        <td class="cell-pos">{{ formatPosition(move.cellIndex) }}</td>
       </tr>
     } @empty {
       <tr>

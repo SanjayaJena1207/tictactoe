@@ -1,13 +1,30 @@
 @if (gameState(); as game) {
-  <div class="board" role="grid" aria-label="Tic tac toe board">
-    @for (cell of game.board; track $index) {
-      <app-game-cell
-        [value]="cell"
-        [status]="game.status"
-        [index]="$index"
-        [highlighted]="winningCells().has($index)"
-        (cellClick)="onCellClick($event)"
-      />
+  <div class="board-wrap">
+    <div class="board" role="grid" aria-label="Tic tac toe board">
+      @for (cell of game.board; track $index) {
+        <app-game-cell
+          [value]="cell"
+          [status]="game.status"
+          [index]="$index"
+          [highlighted]="winningCells().has($index)"
+          (cellClick)="onCellClick($event)"
+        />
+      }
+    </div>
+
+    @if (winLine(); as line) {
+      <svg class="win-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line
+          class="win-line-path"
+          [class.win-line-path--x]="game.winner === 'X'"
+          [class.win-line-path--o]="game.winner === 'O'"
+          pathLength="100"
+          [attr.x1]="cellCenter(line.from).x"
+          [attr.y1]="cellCenter(line.from).y"
+          [attr.x2]="cellCenter(line.to).x"
+          [attr.y2]="cellCenter(line.to).y"
+        />
+      </svg>
     }
   </div>
 

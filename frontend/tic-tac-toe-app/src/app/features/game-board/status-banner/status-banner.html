@@ -1,7 +1,8 @@
 @if (message(); as text) {
   <p
     class="status-banner"
-    [class.status-banner--win]="statusVariant() === 'win'"
+    [class.status-banner--win-x]="statusVariant() === 'win' && winner() === 'X'"
+    [class.status-banner--win-o]="statusVariant() === 'win' && winner() === 'O'"
     [class.status-banner--draw]="statusVariant() === 'draw'"
   >{{ text }}</p>
 }
