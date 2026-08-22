@@ -59,7 +59,7 @@ public sealed class Game
     // Two Player Mode undoes one move (turn reverts to whoever made it); Vs Computer
     // Mode undoes the computer's move plus the human's preceding move as one atomic
     // step (turn reverts to X), except when only the human has moved so far, where
-    // there is no computer move yet to pair it with.
+    // there is no computer move yet to pair it with...
     public OperationResult UndoLastMove()
     {
         if (Status != GameStatus.InProgress)
