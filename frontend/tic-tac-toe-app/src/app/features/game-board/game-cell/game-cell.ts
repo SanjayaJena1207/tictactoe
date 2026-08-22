@@ -17,6 +17,7 @@ export class GameCell {
   readonly cellClick = output<number>();
 
   readonly isClickable = computed(() => this.value() === null && this.status() === 'InProgress');
+  readonly isGameOver = computed(() => this.status() !== 'InProgress');
   readonly display = computed(() => this.value() ?? '');
 
   onClick(): void {

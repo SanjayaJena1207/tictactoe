@@ -1,31 +1,60 @@
+:host {
+  display: block;
+}
+
 .app-shell {
-  max-width: 960px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: var(--space-6);
 }
 
 .top-bar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1.5rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
 }
 
 .layout {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-8);
   align-items: flex-start;
-  flex-wrap: wrap;
   justify-content: center;
 }
 
 .main-area {
-  flex: 1 1 360px;
+  flex: 1 1 380px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .side-panel {
-  flex: 0 1 260px;
+  flex: 0 1 280px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-6);
+}
+
+.panel-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+/* Board + controls stack into a single column below ~900px. */
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .main-area,
+  .side-panel {
+    max-width: none;
+    flex: none;
+  }
 }

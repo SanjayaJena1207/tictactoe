@@ -57,4 +57,36 @@ describe('GameCell', () => {
 
     expect(emitted).toEqual([]);
   });
+
+  it('is not game-over while in progress', () => {
+    const fixture = createCell();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.isGameOver()).toBe(false);
+  });
+
+  it('is game-over once the game has finished', () => {
+    const fixture = createCell();
+    fixture.componentRef.setInput('status', 'Won');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.isGameOver()).toBe(true);
+  });
+
+  it('applies the game-over class to a non-winning cell once the game has ended', () => {
+    const fixture = createCell();
+    fixture.componentRef.setInput('status', 'Draw');
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    expect(button.classList.contains('game-over')).toBe(true);
+    expect(button.classList.contains('winning')).toBe(false);
+  });
+
+  it('does not apply the game-over class to a winning cell', () => {
+    const fixture = createCell();
+    fixture.componentRef.setInput('status', 'Won');
+    fixture.componentRef.setInput('highlighted', true);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    expect(button.classList.contains('winning')).toBe(true);
+    expect(button.classList.contains('game-over')).toBe(false);
+  });
 });

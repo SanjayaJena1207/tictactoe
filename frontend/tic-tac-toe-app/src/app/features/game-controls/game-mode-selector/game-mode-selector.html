@@ -1,8 +1,8 @@
 <div class="mode-selector" role="group" aria-label="Game mode">
   <button
     type="button"
-    class="mode-button"
-    [class.selected]="selectedMode() === 'TwoPlayer'"
+    class="btn"
+    [class.is-selected]="selectedMode() === 'TwoPlayer'"
     [attr.aria-pressed]="selectedMode() === 'TwoPlayer'"
     [disabled]="isMidGame()"
     (click)="selectMode('TwoPlayer')"
@@ -11,8 +11,8 @@
   </button>
   <button
     type="button"
-    class="mode-button"
-    [class.selected]="selectedMode() === 'VsComputer'"
+    class="btn"
+    [class.is-selected]="selectedMode() === 'VsComputer'"
     [attr.aria-pressed]="selectedMode() === 'VsComputer'"
     [disabled]="isMidGame()"
     (click)="selectMode('VsComputer')"

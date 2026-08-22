@@ -2,6 +2,7 @@
   type="button"
   class="cell"
   [class.winning]="highlighted()"
+  [class.game-over]="isGameOver() && !highlighted()"
   [disabled]="!isClickable()"
   [attr.aria-label]="'Cell ' + (index() + 1) + (value() ? ', ' + value() : ', empty')"
   (click)="onClick()"
