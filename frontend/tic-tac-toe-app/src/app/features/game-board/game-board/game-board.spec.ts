@@ -68,4 +68,27 @@ describe('GameBoard', () => {
     expect(fixture.componentInstance.winningCells().has(1)).toBe(true);
     expect(fixture.componentInstance.winningCells().has(5)).toBe(false);
   });
+
+  it('applies the winning CSS class to exactly the winning-cell buttons when status is Won', () => {
+    store.setGameState(
+      makeGame({
+        status: 'Won',
+        winner: 'X',
+        winningCells: [0, 1, 2],
+        board: ['X', 'X', 'X', 'O', 'O', null, null, null, null],
+      }),
+    );
+    const fixture = TestBed.createComponent(GameBoard);
+    fixture.detectChanges();
+
+    const buttons: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('button.cell'));
+    const winningIndices = buttons.reduce<number[]>((acc, button, index) => {
+      if (button.classList.contains('winning')) {
+        acc.push(index);
+      }
+      return acc;
+    }, []);
+
+    expect(winningIndices).toEqual([0, 1, 2]);
+  });
 });
