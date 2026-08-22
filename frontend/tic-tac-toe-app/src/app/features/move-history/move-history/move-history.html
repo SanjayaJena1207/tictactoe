@@ -1,0 +1,23 @@
+<table class="move-history">
+  <caption>Move History</caption>
+  <thead>
+    <tr>
+      <th scope="col">Move #</th>
+      <th scope="col">Player</th>
+      <th scope="col">Position</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (move of moves(); track move.moveNumber) {
+      <tr>
+        <td>{{ move.moveNumber }}</td>
+        <td>{{ move.player }}</td>
+        <td>{{ formatPosition(move.cellIndex) }}</td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="3" class="empty">No moves yet</td>
+      </tr>
+    }
+  </tbody>
+</table>

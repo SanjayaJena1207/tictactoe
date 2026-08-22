@@ -1,0 +1,16 @@
+@if (scoreboard(); as score) {
+  <dl class="scoreboard">
+    <div class="row">
+      <dt>X Wins</dt>
+      <dd>{{ score.xWins }}</dd>
+    </div>
+    <div class="row">
+      <dt>O Wins</dt>
+      <dd>{{ score.oWins }}</dd>
+    </div>
+    <div class="row">
+      <dt>Draws</dt>
+      <dd>{{ score.draws }}</dd>
+    </div>
+  </dl>
+}

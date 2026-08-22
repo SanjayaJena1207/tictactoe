@@ -7,11 +7,13 @@ import { GameMode } from '../models/game-mode.enum';
 import { GameState } from '../models/game-state.model';
 import { Player } from '../models/player.enum';
 import { GameStateStore } from '../state/game-state.store';
+import { ScoreboardService } from './scoreboard.service';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
   private readonly http = inject(HttpClient);
   private readonly store = inject(GameStateStore);
+  private readonly scoreboardService = inject(ScoreboardService);
   private readonly baseUrl = `${environment.apiBaseUrl}/games`;
 
   createGame(mode: GameMode): Observable<GameState> {
@@ -25,7 +27,7 @@ export class GameService {
   applyMove(gameId: string, player: Player, cellIndex: number): Observable<GameState> {
     return this.request(
       this.http.post<GameState>(`${this.baseUrl}/${gameId}/moves`, { player, cellIndex }),
-    );
+    ).pipe(tap(() => this.scoreboardService.getScoreboard().subscribe()));
   }
 
   undo(gameId: string): Observable<GameState> {
