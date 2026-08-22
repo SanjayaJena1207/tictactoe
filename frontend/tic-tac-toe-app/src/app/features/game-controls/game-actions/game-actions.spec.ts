@@ -20,6 +20,16 @@ function makeGame(overrides: Partial<GameState>): GameState {
   };
 }
 
+function getUndoButton(fixture: { nativeElement: HTMLElement }): HTMLButtonElement {
+  const button = Array.from(fixture.nativeElement.querySelectorAll('button')).find((btn) =>
+    btn.textContent?.includes('Undo Last Move'),
+  );
+  if (!button) {
+    throw new Error('Undo button not found');
+  }
+  return button as HTMLButtonElement;
+}
+
 describe('GameActions', () => {
   let store: GameStateStore;
   let undo: ReturnType<typeof vi.fn>;
@@ -75,6 +85,50 @@ describe('GameActions', () => {
     const fixture = TestBed.createComponent(GameActions);
     fixture.detectChanges();
     expect(fixture.componentInstance.canUndo()).toBe(false);
+  });
+
+  it('renders the Undo Last Move button as disabled when there is no game', () => {
+    const fixture = TestBed.createComponent(GameActions);
+    fixture.detectChanges();
+    expect(getUndoButton(fixture).disabled).toBe(true);
+  });
+
+  it('renders the Undo Last Move button as disabled when moveHistory is empty', () => {
+    store.setGameState(makeGame({}));
+    const fixture = TestBed.createComponent(GameActions);
+    fixture.detectChanges();
+    expect(getUndoButton(fixture).disabled).toBe(true);
+  });
+
+  it('renders the Undo Last Move button as disabled once the game has finished, even with move history', () => {
+    store.setGameState(
+      makeGame({
+        status: 'Won',
+        winner: 'X',
+        moveHistory: [{ moveNumber: 1, player: 'X', cellIndex: 0, timestamp: '2026-01-01T00:00:00Z' }],
+      }),
+    );
+    const fixture = TestBed.createComponent(GameActions);
+    fixture.detectChanges();
+    expect(getUndoButton(fixture).disabled).toBe(true);
+  });
+
+  it('renders the Undo Last Move button as enabled once a move has been made and the game is in progress', () => {
+    store.setGameState(
+      makeGame({ moveHistory: [{ moveNumber: 1, player: 'X', cellIndex: 0, timestamp: '2026-01-01T00:00:00Z' }] }),
+    );
+    const fixture = TestBed.createComponent(GameActions);
+    fixture.detectChanges();
+    expect(getUndoButton(fixture).disabled).toBe(false);
+  });
+
+  it('does not call GameService.undo when the button is disabled and clicked', () => {
+    const fixture = TestBed.createComponent(GameActions);
+    fixture.detectChanges();
+
+    getUndoButton(fixture).click();
+
+    expect(undo).not.toHaveBeenCalled();
   });
 
   it('calls GameService.undo with the current game id', () => {

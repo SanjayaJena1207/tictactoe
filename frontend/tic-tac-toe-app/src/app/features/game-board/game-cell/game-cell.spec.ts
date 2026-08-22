@@ -89,4 +89,41 @@ describe('GameCell', () => {
     expect(button.classList.contains('winning')).toBe(true);
     expect(button.classList.contains('game-over')).toBe(false);
   });
+
+  it('emits its index when the rendered button is clicked while empty', () => {
+    const fixture = createCell();
+    fixture.detectChanges();
+    const emitted: number[] = [];
+    fixture.componentInstance.cellClick.subscribe((index) => emitted.push(index));
+
+    fixture.nativeElement.querySelector('button').click();
+
+    expect(emitted).toEqual([4]);
+  });
+
+  it('does not emit when the rendered button is clicked while occupied', () => {
+    const fixture = createCell();
+    fixture.componentRef.setInput('value', 'X');
+    fixture.detectChanges();
+    const emitted: number[] = [];
+    fixture.componentInstance.cellClick.subscribe((index) => emitted.push(index));
+
+    fixture.nativeElement.querySelector('button').click();
+
+    expect(emitted).toEqual([]);
+  });
+
+  it('renders the button as disabled and does not emit when clicked once the game has ended', () => {
+    const fixture = createCell();
+    fixture.componentRef.setInput('status', 'Won');
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    expect(button.disabled).toBe(true);
+
+    const emitted: number[] = [];
+    fixture.componentInstance.cellClick.subscribe((index) => emitted.push(index));
+    button.click();
+
+    expect(emitted).toEqual([]);
+  });
 });
