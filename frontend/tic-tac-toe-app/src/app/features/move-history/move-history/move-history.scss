@@ -19,6 +19,7 @@
   display: block;
   position: relative;
   width: 100%;
+  min-width: 320px;
   font-size: var(--font-size-sm);
   max-height: calc(17px + var(--space-3) + 39px + (27px * 10));
   overflow-y: auto;
@@ -115,8 +116,8 @@
   }
 
   th:nth-child(3),
-  td:nth-child(3) {
-    min-width: 120px;
+  td:nth-child(3) {    
+    min-width: 190px;
   }
 
   .cell-num,
