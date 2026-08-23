@@ -21,7 +21,7 @@ supporting two-player and vs-computer modes, undo, move history, and a running s
 - Undo of the most recent move (single step; in vs-computer mode this undoes the human
   move and the computer's reply together)
 - Reset of the current game (fresh board, same game id)
-- Move history (player, cell, move number, timestamp)
+- Move history (player, cell, move number)
 - Running scoreboard (X wins / O wins / draws) across games, with a scoreboard reset
 - Responsive layout, winning-cell highlighting, and disabled-state handling in the UI
 
@@ -45,7 +45,7 @@ dotnet restore
 dotnet run --project src/TicTacToe.Api
 ```
 
-The API listens on `http://localhost:5105` (HTTPS also available on `https://localhost:7229`).
+The API listens on `http://localhost:5105`.
 With the `Development` environment active, Swagger UI is available at
 `http://localhost:5105/swagger`.
 

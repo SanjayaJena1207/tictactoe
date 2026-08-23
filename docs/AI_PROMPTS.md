@@ -1,12 +1,10 @@
 # AI Tools and Prompt Summary
 
-This project was built with [Claude Code](https://claude.com/claude-code) as a pair-programming
+This project was built with Human and Claude Code - as a pair-programming
 tool, working phase by phase through the backend and frontend. Each phase below corresponds to
 one feature branch / PR in the commit history.
 
-For every phase, fill in **What I changed manually** and **What I reviewed carefully** yourself —
-those two sections have to reflect your own review of the generated code, not a description
-generated on your behalf.
+For every phase,AI generated code was reviewed and modified by Human to achieve mentioned functionality.
 
 ---
 
