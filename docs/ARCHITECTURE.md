@@ -1,7 +1,7 @@
 # Architecture
 
-> Placeholder — recorded at commit 1 so the intended structure is tracked before any
-> code exists. Details will be filled in as the implementation lands.
+> Placeholder — recorded at commit 1 so the intended structure is tracked.
+> Details will be filled in as the implementation lands.
 
 ## Overview
 
